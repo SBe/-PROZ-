@@ -6,7 +6,7 @@ import End.Sprite;
 public class Monster extends Mob {
 	
 	private int xa = 0;
-	private int ya = 0;
+	private int ya = -1;
 	private int ticks = 0;
 	private Player player;
 	public Monster(int x, int y, Player player){
@@ -16,48 +16,37 @@ public class Monster extends Mob {
 		sprite = Sprite.monsterLeft1Sprite;
 	}
 	public void update(){
-			if(distance() > 48){
-				if(!collision(xa + x, ya + y)){
-					mobMove();
-				}
-				else if(!collision(x + xa, y)){
-						ya *= -1;
-					//	xa *= -1;
-						y += ya;
-				}
-				else if(!collision(x , y + ya) ){
-						xa *= -1;
-				//		ya = 0;
-						x += xa;
-				}
-				if( xa > 0) dir = 1;
-				if( xa < 0) dir = 3;
-				if( ya > 0) dir = 2;
-				if( ya < 0) dir = 0;
-							
-			}
-		++ticks;
-	}
-	private void mobMove(){
-		int tmpX = player.x;
-		int tmpY = player.y; 
-		//if(!collision(xa + x, ya + y)){
-		if(tmpX - x > 0)
-			xa = 1;
-		else if(tmpX - x == 0)
+			if(player.x - x > 0)
+				xa = 1;
+			if(player.x - x < 0)
+				xa = -1;
+			if(player.y - y > 0)
+				ya = 1;
+			if(player.y - y < 0)
+				ya = -1;
+			move(xa, ya);
 			xa = 0;
-		else
-			xa = -1;
-		if(tmpY - y > 0)
-			ya = 1;
-		else if( tmpY == y)
 			ya = 0;
-		else
-			ya = -1;
-		x += xa;
-		y += ya;
-		//}
+			
 	}
+	public synchronized void move(int xa, int ya){
+		if(distance() > 48){
+		if(xa != 0 && ya != 0){
+			move(xa,0);
+			move(0, ya);
+			return;
+		}
+		if( xa > 0) dir = 1;
+		if( xa < 0) dir = 3;
+		if( ya > 0) dir = 2;
+		if( ya < 0) dir = 0;
+		if(!collision(x + xa, y + ya)){
+			x += xa;
+			y += ya;
+			} 
+		}
+		++ticks;
+}
 	private boolean collision(int xa, int ya){
 		boolean solid = false;
 		for( int c = 0; c < 4; c++){
