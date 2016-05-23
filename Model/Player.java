@@ -32,10 +32,10 @@ public class Player extends Mob{
 		++ticks;
 		if(fire_rate > 0) --fire_rate;
 		int xa = 0, ya = 0;
-		if(input.isUp()) ya--;
-		if(input.isDown()) ya++;
-		if(input.isLeft()) xa--;
-		if(input.isRight()) xa++;
+		if(input.isUp()) ya -= 2;
+		if(input.isDown()) ya += 2;
+		if(input.isLeft()) xa -= 2;
+		if(input.isRight()) xa += 2;
 		if(xa != 0 || ya != 0) {
 			move(xa, ya);
 			walking = true;
@@ -101,7 +101,10 @@ public class Player extends Mob{
 					sprite = Sprite.playerLeft2Sprite;
 			}
 		}
-		screen.renderMob(x, y, sprite);
+		screen.renderMob((int)x, (int)y, sprite);
+	}
+	public Keyboard getKeyboard(){
+		return input;
 	}
 	
 }
