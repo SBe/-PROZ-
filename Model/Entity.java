@@ -6,7 +6,7 @@ import End.Screen;
 import Level.Level;
 
 public abstract class Entity {
-	public int 	x, y;
+	protected double x, y;
 	private boolean removed = false;
 	protected Level level;
 	protected final static Random random = new Random();
@@ -25,5 +25,11 @@ public abstract class Entity {
 	}
 	public void init(Level level){
 		this.level = level;
+	}
+	public double getX(){
+		return x;
+	}
+	public double getY(){
+		return y;
 	}
 }
