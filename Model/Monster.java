@@ -1,83 +1,85 @@
 package Entity;
 
+import java.util.List;
+
+import End.Screen;
 import End.Sprite;
-import projectile.Projectile;
-import projectile.myProjectile;
 
-public abstract class Mob extends Entity{
-	
-	protected Sprite sprite;
-	protected int dir = 0;
-	protected boolean moving = false;
-	public synchronized void move(int xa, int ya){
-			if(xa != 0 && ya != 0){
-				move(xa,0);
-				move(0, ya);
-				return;
-			}
-			if( xa > 0) dir = 1;
-			if( xa < 0) dir = 3;
-			if( ya > 0) dir = 2;
-			if( ya < 0) dir = 0;
-			
-			if(this instanceof Player){
-				for(int y = 0; y < Math.abs(ya); y++){
-					if(!collision(xa, absolute(ya), 16))
-						this.y += absolute(ya);
-				}
-				for(int x = 0; x < Math.abs(xa); x++){
-					if(!collision(absolute(xa), ya, 16))
-						this.x += absolute(xa);
-				}
-			} 
-			if(!collision(x + xa, y + ya) && this instanceof Monster){
-				for(int y = 0; y < Math.abs(ya); y++){
-					if(!collision(xa, absolute(ya)))
-						this.y += absolute(ya);
-				}
-				for(int x = 0; x < Math.abs(xa); x++){
-					if(!collision(absolute(xa), ya))
-						this.x += absolute(xa);
-				}
-			} 
-	}
-	
-	private int absolute(double y) {
-		if(y < 0) return -1;
-		return 1;
-	}
+public class Monster extends Mob {
 
+	private int ticks = 0;
+	
+	public Monster(int x, int y){
+		this.x = x << 4;
+		this.y = y << 4;
+		sprite = Sprite.monsterLeft1Sprite;
+	}
 	public void update(){
-		
+		++ticks;
+		move();		
 	}
-	
-	public void render(){
-		
-	}
-	
-	private boolean collision(double xa, double ya, int size){
-		boolean solid = false;
-		for( int c = 0; c < 4; c++){
-			double xt = ((x + xa) + c % 2 * size + 7)/16;
-			double yt = ((y + ya) + c / 2 * size)/16;
-			int ix = (int) Math.floor(xt);
-			int iy= (int) Math.ceil(yt);
-			//if( c / 2 == 0) iy = (int) Math.floor(yt);
-			if(level.getTile(ix, iy).solid()) solid = true;
+	public synchronized void move(){
+		int xa = 0, ya = 0;
+		List<Player> players = level.getPlayers(this, 60);
+		if(players.size() > 0){
+			Player player = level.getFirstPlayer();
+		if(player.x - x > 0){
+			xa++;
+			dir = 1;
+			
+		} else if (player.x - x < 0){
+			xa--;
+			dir = 3;
 		}
-		return solid;
-	}
-	public boolean collision(double xa, double ya){
-		boolean solid = false;
-		for( int c = 0; c < 4; c++){
-			double xt = (xa + c % 2 * 32 )/16;
-			double yt = (ya + c / 2 * 32)/16;
-			if(level.getTile((int)xt, (int)yt).solid()) solid = true;
+		if(player.y - y > 0){
+			ya++;
+			dir = 2;
+			
+		}else if(player.y - y < 0){
+			ya--;
+			dir = 0;
 		}
-		return solid;
+		if(xa != 0 || ya != 0){
+			move(xa,ya);
+			return;
+		}
+		}
+}
+	public boolean solid(){
+		return true;
 	}
-	protected void shoot(double x, double y, double d){
-		Projectile p = new myProjectile( (int)(x + 6) , (int)y,  d);
-		level.add(p);
+	public void render(Screen screen){
+		if(dir == 0) { 
+				if(ticks  % 30 < 15)
+					sprite = Sprite.monsterFrontSprite;
+				else
+					sprite = Sprite.monsterFront1Sprite;
+		}
+		if(dir == 1) {
+				if(ticks % 30 < 15)
+					sprite = Sprite.monsterRightSprite;
+				else
+					sprite = Sprite.monsterRight1Sprite;
+		}
+		if(dir == 2) {
+		
+				if(ticks % 30 < 15)
+					sprite = Sprite.monsterBackSprite;
+				else
+					sprite = Sprite.monsterBack1Sprite;
+		}
+		if(dir == 3) {
+				if(ticks % 30 < 15)
+					sprite = Sprite.monsterLeftSprite;
+				else
+					sprite = Sprite.monsterLeft1Sprite;
+			
+		}
+		screen.renderMob((int)x, (int)y , sprite);
+	}
+	public double distance(Player player){
+		
+		double distance = Math.sqrt((player.x - x ) * (player.x - x  ) + (player.y - y ) * (player.y - y ) );
+		return distance;
 	}
 }
