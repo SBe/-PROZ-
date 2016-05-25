@@ -2,14 +2,16 @@ package End;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-import Entity.Monster;
 import Entity.Player;
 import Level.Level;
 import Level.SpawnLevel;
@@ -29,6 +31,8 @@ public class Game extends Canvas implements Runnable{
 	private Keyboard keyboard;
 	private Level level;
 	public Thread thread;
+	private JButton myButton = new JButton("EXIT");
+	public static boolean dead = false;
 	
 	public void run(){
 		long lastTime = System.nanoTime();
@@ -66,14 +70,20 @@ public class Game extends Canvas implements Runnable{
 		running = false;
 		try{
 			thread.join();
+			System.exit(0);
 		}	catch(InterruptedException e){
 			e.printStackTrace();
 		}
 	}
 	public void update(){
-		keyboard.update();
-		player.update();
-		level.update();
+		if(!dead){
+			keyboard.update();
+			level.update();
+		}
+		else
+		{
+			level.removeall();	
+		}
 	}
 	public void render(){
 		BufferStrategy bs = getBufferStrategy();
@@ -81,18 +91,26 @@ public class Game extends Canvas implements Runnable{
 			createBufferStrategy(3);
 			return;
 		}
-	//	screen.clear();
-		level.render(player.x - screen.getWidth()/2 + Sprite.playerBack1Sprite.SIZE/2, player.y - screen.getHeight()/2 + Sprite.playerBack1Sprite.SIZE / 2, screen);
-		player.render(screen);
-		
-	//	screen.renderSprite(16 * 19, 16 * 55, new Sprite(16, 16, 0xFF123123), true);
-		for(int i = 0; i < pixels.length; i++){
-			pixels[i] = screen.pixels[i];
-		}
 		Graphics g = bs.getDrawGraphics();
-		g.drawImage(image, 0, 0,SCALE * WIDTH, SCALE * HEIGHT, null );
+		level.render((int)player.getX() - screen.getWidth()/2 + Sprite.playerBack1Sprite.SIZE/2, (int)player.getY() - screen.getHeight()/2 + Sprite.playerBack1Sprite.SIZE / 2, screen);
+		if(!dead){
+			for(int i = 0; i < pixels.length; i++){
+				pixels[i] = screen.pixels[i];
+			}
+			g.drawImage(image, 0, 0,SCALE * WIDTH, SCALE * HEIGHT, null );
+		}else{
+			for(int i = 0; i < pixels.length; i++){
+				pixels[i] = 0xFFC0C0C0;
+			}
+			g.drawImage(image, 0, 0,SCALE * WIDTH, SCALE * HEIGHT, null );
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 120));
+			g.drawString("GAME OVER",70, 100);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+			g.drawString("Thank you for your time.", 50, 400);
+		}
 		g.dispose();
 		bs.show();
+		
 	}
 	public Game(){
 		Dimension size = new Dimension(SCALE * WIDTH, HEIGHT * SCALE);
@@ -100,13 +118,13 @@ public class Game extends Canvas implements Runnable{
 		screen = new Screen(WIDTH, HEIGHT);
 		keyboard = new Keyboard();
 		addKeyListener(keyboard);
-		level = new SpawnLevel("/Level_Spawn.png");
-		player = new Player(16 * 19, 16 * 55,keyboard);
-		player.init(level);
+		level = new SpawnLevel("/level2.png");
+		player = new Player(16 * 3, 16 * 69,keyboard);
+		level.add(player);
 		Mouse mouse = new Mouse();
-		level.add(new Monster( 19,  55, player));
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
+
 	}
 	public static void main(String args[]){
 		Game g = new Game();
@@ -124,5 +142,8 @@ public class Game extends Canvas implements Runnable{
 	}
 	public int getHeight(){
 		return HEIGHT * SCALE;
+	}
+	public static void setState(boolean b){
+		dead = b;
 	}
 }
