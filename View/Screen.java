@@ -77,9 +77,9 @@ public class Screen {
 	xp -= xOffset;
     yp -= yOffset;
     for (int y = 0; y < sprite.SIZE; y++) {
-       int ya = y + yp;
+       int ya = y + (int)yp;
        for (int x = 0; x < sprite.SIZE; x++) {
-          int xa = x + xp;
+          int xa = x + (int)xp;
           if (xa < -sprite.SIZE || xa >= width || ya < 0 || ya >= height) break;
           if( xa < 0) xa = 0;
           int col = sprite.pixels[x + y * sprite.SIZE];
