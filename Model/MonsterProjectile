@@ -1,0 +1,57 @@
+package projectile;
+
+import End.Screen;
+import End.Sprite;
+import Entity.ParticleSpawner;
+
+public class MonsterProjectile extends Projectile{
+	public static final int  FIRE_RATE = 10;
+	public MonsterProjectile(double x, double y, double dir){
+		super(x, y, dir);
+		range = 100 + random.nextInt(70);
+		damage = 10;
+		sprite = Sprite.projectile;
+		speed = 5;
+		nx = speed * Math.cos(dir) +  random.nextDouble() - 0.5;
+		ny = speed * Math.sin(dir) +  random.nextDouble() - 0.5;
+	}
+	public void update(){
+		if(((x + nx) <= level.getFirstPlayer().getX() + 16 && (x + nx) > level.getFirstPlayer().getX() ) && ( ( y + ny)) <= level.getFirstPlayer().getY() + 16 && (y + ny) >= level.getFirstPlayer().getY() - 8) {
+			remove();
+			level.getFirstPlayer().setHP(level.getFirstPlayer().getHP() - damage);
+			if(level.getFirstPlayer().getHP() == 0){
+			//	level.getFirstPlayer().remove();
+			//	Game.setState(true);
+			}
+			level.add(new ParticleSpawner((int)(x - 8), (int)(y - 8), 30, 50, level));
+			}
+		if(level.tileCollision((int)(x + nx), (int)(y + ny),  5,  5, 6)){
+				remove();
+				level.add(new ParticleSpawner((int)(x - 8), (int)(y - 8), 30, 50, level));
+		}
+			move();
+	}
+	public void render(Screen screen){
+		screen.renderSprite((int)(x ) , (int)(y )  + 8, sprite);
+	}
+	protected void move(){
+		if(!level.tileCollision((int)(x ), (int)(y ),  5,  5, 6)){
+			this.x += nx;
+			this.y += ny;
+		}
+		if(calculate() > range){
+			remove();
+		}
+	}
+	
+	public Sprite getSprite(){
+		return sprite;
+	}
+	public int getSpriteSize(){
+		return sprite.SIZE;
+	}
+	protected double calculate(){
+		distance = Math.sqrt((xOrigin - x ) * (xOrigin - x  ) + (yOrigin - y ) * (yOrigin - y ) );
+		return distance;
+	}
+}
