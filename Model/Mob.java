@@ -1,6 +1,7 @@
 package Entity;
 
 import End.Sprite;
+import projectile.MonsterProjectile;
 import projectile.Projectile;
 import projectile.myProjectile;
 
@@ -77,7 +78,11 @@ public abstract class Mob extends Entity{
 		return solid;
 	}
 	protected void shoot(double x, double y, double d){
-		Projectile p = new myProjectile( (int)(x + 6) , (int)y,  d);
+		Projectile p = new myProjectile( (int)(x + 9) , (int)y,  d);
 		level.add(p);
+	}
+	protected void shootmonster(double x, double y, double d){
+		Projectile p = new MonsterProjectile( (int)(x + 9) , (int)y,  d);
+		level.add_monster_projectiles(p);;
 	}
 }
