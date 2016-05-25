@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import Entity.Monster;
-import Tile.Tile;
+import Entity.Turrent;
 
 public class SpawnLevel extends Level{
 	
@@ -30,6 +30,30 @@ public class SpawnLevel extends Level{
 		} catch(IOException e){
 			e.printStackTrace();
 		}
-	//	add(new Monster( 19,  55));
+	//	add(new Monster( 22,  55));
+		add(new Turrent(11, 62));
+		add(new Turrent(42, 21));
+		add(new Turrent(47, 12));
+		add(new Turrent(68, 8));
+		add(new Turrent(63, 17));
+		add(new Turrent(72, 24));
+		add(new Turrent(70, 26));
+		add(new Turrent(94, 14));
+		add(new Turrent(94, 21));
+		add(new Turrent(109, 17));
+		add(new Turrent(97, 29));
+		add(new Turrent(106, 24));
+		add(new Turrent(102, 29));
+		add(new Turrent(29, 61));
+		add(new Turrent(26, 52));
+		add(new Turrent(8, 48));
+		add(new Turrent(23, 41));
+		add(new Turrent(10, 14));
+		add(new Turrent(28, 14));
+		add(new Monster(16, 51));
+		add(new Monster(21, 51));
+		add(new Monster( 16,  55));
+		add(new Monster( 18,  57));
+	
 	}
 }
