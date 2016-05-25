@@ -2,6 +2,7 @@ package Entity;
 
 import javax.swing.Timer;
 
+import End.Game;
 import End.Keyboard;
 import End.Mouse;
 import End.Screen;
@@ -17,6 +18,8 @@ public class Player extends Mob{
 	private int ticks = 0;
 	private boolean walking = false;
 	private int fire_rate = 0;
+	public static boolean alive = true;
+	private boolean win = false;
 	public Player(Keyboard input){
 		this.input = input;
 		time.start();
@@ -29,25 +32,32 @@ public class Player extends Mob{
 		fire_rate = myProjectile.FIRE_RATE;
 	}
 	public void update(){
-		++ticks;
-		if(fire_rate > 0) --fire_rate;
-		int xa = 0, ya = 0;
-		if(input.isUp()) ya -= 2;
-		if(input.isDown()) ya += 2;
-		if(input.isLeft()) xa -= 2;
-		if(input.isRight()) xa += 2;
-		if(xa != 0 || ya != 0) {
-			move(xa, ya);
-			walking = true;
+		if(alive){
+			win();
+			++ticks;
+			if(fire_rate > 0) --fire_rate;
+			int xa = 0, ya = 0;
+			if(input.isUp()) ya -= 3;
+			if(input.isDown()) ya += 3;
+			if(input.isLeft()) xa -= 3;
+			if(input.isRight()) xa += 3;
+			if(xa != 0 || ya != 0) {
+				move(xa, ya);
+				walking = true;
+			}
+			else{
+				walking = false;
+			}
+			updateShooting();
+			clear();
 		}
-		else{
-			walking = false;
+		if(this.hp == 0){
+			alive = false;
+			dir = 4;
 		}
-		updateShooting();
-		clear();
+	
 	}
 	private void clear() {
-		//System.out.println(projectiles.size());
 		for(int i = 0; i < level.getProjectiles().size(); i++){
 			Projectile p = level.getProjectiles().get(i);
 			if(p.isRemoved()) level.getProjectiles().remove(i);
@@ -65,6 +75,7 @@ public class Player extends Mob{
 		
 	}
 	public void render(Screen screen){
+		if(alive){
 		if(dir == 0) {
 			sprite = Sprite.playerFrontSprite; 
 			if(walking){
@@ -101,10 +112,27 @@ public class Player extends Mob{
 					sprite = Sprite.playerLeft2Sprite;
 			}
 		}
+		}
+		if(dir == 4)
+			sprite = Sprite.playerDead;
 		screen.renderMob((int)x, (int)y, sprite);
+	}
+	private void win(){
+		int x1 = 99 * 16;
+		int x2 = 102 * 16;
+		int y1 = 33 * 16;
+		if(this.x > x1 && this.x < x2 && this.y > y1){
+			win = true;
+			System.out.println(x + "  " +win);
+		}			
 	}
 	public Keyboard getKeyboard(){
 		return input;
+	}	
+	public void setSprite(Sprite sprite){
+		this.sprite = sprite;
 	}
-	
+	public boolean getWin(){
+		return win;
+	}
 }
