@@ -1,0 +1,37 @@
+package Entity;
+
+import End.Screen;
+import End.Sprite;
+
+public class Turrent extends Mob {
+	private static final int FIRE = 40;
+	private int fire_rate = 40;
+	public Turrent(int x, int y){
+		this.x = x << 4;
+		this.y = y << 4;
+		this.sprite = Sprite.turrentSprite;
+	}
+	public void update(){
+		if(Player.alive && level.getFirstPlayer().getWin() == false){
+			if(fire_rate > 0) --fire_rate;
+			updateshooting();
+		}
+	}
+	private void updateshooting() {
+		if(fire_rate == 0){
+			Player p = level.getFirstPlayer();
+			double px = p.getX() - x;
+			double py = p.getY() - y;
+			double dir = Math.atan2(py, px);
+			shootmonster(x, y, dir);
+			fire_rate = FIRE;
+		}
+		
+	}
+	public void render(Screen screen){
+		screen.renderMob((int)x, (int)y, sprite);
+	}
+	Turrent getSource(){
+		return this;
+	}
+}
