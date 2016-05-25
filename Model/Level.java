@@ -18,6 +18,7 @@ public class Level {
 	private List<Projectile> projectiles = new ArrayList<Projectile>();
 	private List<Particle> particles = new ArrayList<Particle>();
 	private List<Player> players = new ArrayList<Player>();
+	private List<Projectile> monster_projectiles = new ArrayList<Projectile>();
 	public Level(int width, int height){
 		this.width = width;
 		this.height = height;
@@ -48,9 +49,11 @@ public class Level {
 		for(int i = 0; i < players.size(); i++){
 			players.get(i).update();
 		}
+		for(int i = 0; i < monster_projectiles.size(); i++)
+			monster_projectiles.get(i).update();
 		remove();
 	}
-	private void remove(){
+	public void remove(){
 		
 		for(int i = 0; i < entities.size(); i++){
 			if(entities.get(i).isRemoved())entities.remove(i);
@@ -64,6 +67,8 @@ public class Level {
 		for(int i = 0; i < players.size(); i++){
 			if(players.get(i).isRemoved()) players.remove(i);
 		}
+		for(int i = 0; i < monster_projectiles.size(); i++)
+			if(monster_projectiles.get(i).isRemoved()) monster_projectiles.remove(i);
 	}
 	public void add(Entity e){
 		e.init(this);
@@ -75,6 +80,10 @@ public class Level {
 			players.add((Player)e);
 		else
 			entities.add(e);	
+	}
+	public void add_monster_projectiles(Entity e){
+		e.init(this);
+		monster_projectiles.add((Projectile) e);
 	}
 	
 	public void render(int xScroll, int yScroll, Screen screen){
@@ -100,6 +109,9 @@ public class Level {
 		for(int i = 0; i < players.size(); i++){
 			players.get(i).render(screen);
 		}
+		for(int i = 0; i < monster_projectiles.size(); i++){
+			monster_projectiles.get(i).render(screen);
+		}
 	}
 	public Tile getTile(int x, int y){
 		if(x < 0 || y  < 0 || x >= width || y >= height) return Tile.voidTile;
@@ -108,8 +120,6 @@ public class Level {
 		if(tiles[x + y * width] == 0xFF7F3300) return Tile.woodenfloorTile;
 		if(tiles[x + y * width] == 0xFF9F9F9F) return Tile.wallTile;
 		return Tile.voidTile;
-	}
-	private void time(){
 	}
 	public boolean tileCollision(int x, int y, int xoffset, int yoffset, int size){
 		boolean solid = false;
@@ -133,11 +143,16 @@ public class Level {
 	public List<Player> getPlayers(){
 		return players;
 	}
+	public List<Entity> getEntities(){
+		return entities;
+	}
 	public Player getPlayerAt(int i){
 		return players.get(i);
 	}
 	public Player getFirstPlayer(){
-		return players.get(0);
+		if(players.size() > 0)
+			return players.get(0);
+		return null;
 	}
 	public List<Entity> getEntities(Entity e,  int radius){
 		List<Entity> result = new ArrayList<Entity>();
@@ -175,4 +190,22 @@ public class Level {
 		
 		return play;
 	}
+	public void removeall() {
+		for(int i = 0; i < entities.size(); i++){
+			entities.remove(i);
+		}
+		for(int i = 0; i < projectiles.size(); i++){
+			projectiles.remove(i);
+		}
+		for(int i = 0; i < particles.size(); i++){
+			particles.remove(i);
+		}
+		for(int i = 0; i < players.size(); i++){
+			players.remove(i);
+		}
+		for(int i = 0; i < monster_projectiles.size(); i++)
+			monster_projectiles.remove(i);
+		
+	}
+	
 }
